@@ -11,7 +11,8 @@
  * @example		#vimeo(動画ID,[width=ピクセル指定],[left|center|right],[auto],[loop])
  * @example		&vimeo(動画ID,[width=ピクセル指定],[left|center|right],[auto],[loop]);
  * @license		Apache License 2.0
- * @version		0.1.0
+ * @version		0.1.1
+ * @since 		0.1.1 2021/01/24 CSSでスタイル変更が可能なようにHTML要素クラス名設定を追加
  * @since 		0.1.0 2021/01/14 暫定公開
  *
  */
@@ -25,6 +26,9 @@
 	 360p： 640× 360
 	 240p： 426× 240
 */
+
+// 動画HTML要素クラス名
+define('PLUGIN_VIMEO_CLASS_NAME', 'vimeo');
 
 function plugin_vimeo_params($args) {
 	// 引数チェック＆パラメータ設定用
@@ -48,8 +52,9 @@ function plugin_vimeo_params($args) {
 		$params['_error'] = '動画IDが指定されていません';
 		return $params;
 	}
-	// 動画IDを設定したタイミングで引数を小文字に変換する
+	// 動画IDを設定したタイミングで引数を小文字に変換＆前後スペースを削除する
 	$args = array_map('strtolower', $args);
+	$args = array_map('trim', $args);
 	if ( isset($args[0]) && ($args[0] != '') ) {
 		// 第2引数以降が存在する
 		foreach ($args as $arg) {
@@ -96,6 +101,8 @@ function plugin_vimeo_params($args) {
 }
 
 function plugin_vimeo_make_html($params) {
+	// ヒアドキュメント展開用
+	$_ = function($const){return $const;};
 	// 動画ID
 	$id = $params['id'];
 	// 動画幅
@@ -122,7 +129,7 @@ function plugin_vimeo_make_html($params) {
 	$src = '"https://player.vimeo.com/video/' . $id . $auto . $loop . '"';
 
 	$body = <<<EOM
-<div align=$align>
+<div class="{$_(PLUGIN_VIMEO_CLASS_NAME)}" align=$align>
 	<div style="max-width: $width;">
 		<div style="height: 0; position: relative; padding-bottom: 56.25%;">
 			<iframe style="
