@@ -7,11 +7,12 @@
  *
  * @author		オヤジ戦隊ダジャレンジャー <red@dajya-ranger.com>
  * @copyright	Copyright © 2021, dajya-ranger.com
- * @link		https://dajya-ranger.com/pukiwiki/responsive-video-plugin/
- * @example		#vimeo(動画ID,[width=ピクセル指定],[left|center|right],[auto],[loop])
- * @example		&vimeo(動画ID,[width=ピクセル指定],[left|center|right],[auto],[loop]);
+ * @link		https://dajya-ranger.com/pukiwiki/responsive-video-play-plugin/
+ * @example		#vimeo(動画ID[,width=ピクセル指定][,left|center|right][,auto][,loop])
+ * @example		&vimeo(動画ID[,width=ピクセル指定][,left|center|right][,auto][,loop]);
  * @license		Apache License 2.0
- * @version		0.1.1
+ * @version		0.1.2
+ * @since 		0.1.2 2021/04/18 パラメータ設定用（初期値）の設定によって、プラグインのアライメント引数オプションが有効にならないケースが発生するバグを対処
  * @since 		0.1.1 2021/01/24 CSSでスタイル変更が可能なようにHTML要素クラス名設定を追加
  * @since 		0.1.0 2021/01/14 暫定公開
  *
@@ -77,10 +78,22 @@ function plugin_vimeo_params($args) {
 				switch ($val[0]) {
 				case 'auto':
 				case 'loop':
+					$params[$val[0]] = TRUE;
+					break;
 				case 'left':
+					$params[$val[0]] = TRUE;
+					$params['center'] = FALSE;
+					$params['right'] = FALSE;
+					break;
 				case 'center':
+					$params[$val[0]] = TRUE;
+					$params['left'] = FALSE;
+					$params['right'] = FALSE;
+					break;
 				case 'right':
 					$params[$val[0]] = TRUE;
+					$params['left'] = FALSE;
+					$params['center'] = FALSE;
 					break;
 				case 'width':
 					if (isset($val[1]) && ($val[1] != '')) {
@@ -118,12 +131,12 @@ function plugin_vimeo_make_html($params) {
 		$loop = ($params['loop'])? '?loop=1' : '';
 	}
 	// アライメント
-	if ($params['center']) {
-		$align = '"center"';
-	} else if ($params['right']) {
-		$align = '"right"';
-	} else {
+	if ($params['left']) {
 		$align = '"left"';
+	} else if ($params['center']) {
+		$align = '"center"';
+	} else {
+		$align = '"right"';
 	}
 	// ソースURL編集
 	$src = '"https://player.vimeo.com/video/' . $id . $auto . $loop . '"';
